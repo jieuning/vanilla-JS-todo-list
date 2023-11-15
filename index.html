@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <title>vanilla JS todo list</title>
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" id="todo-input" placeholder="할 일 추가">
+        <button id="add-todo">추가</button>
+        <div class="spacing-10"></div>
+        <div class="filters">
+            <button id="filter-all">전체</button>
+            <button id="filter-active">진행 중</button>
+            <button id="filter-completed">완료됨</button>
+        </div>
+        <ul id="todo-list"></ul>
+
+        <script>
+            // 1. 데이터 변경에 따른 UI를 수동적으로 변경해줘야한다.
+            // 2. html을 가져와서 javascript로 수정하고 다시 html로 그린다. 이벤트가 발생할 때마다 이러한 작업을 계속 반복한다.
+            const items = [];
+
+            let filter = "all";
+            const addButton = document.getElementById("add-todo");
+            const inputElement = document.getElementById("todo-input");
+            const filterAllButton = document.getElementById("filter-all");
+            const filterActiveButton = document.getElementById("filter-active");
+            const filterCompletedButton = document.getElementById("filter-completed");
+            const todoListElement = document.getElementById("todo-list")
+
+            addButton.addEventListener("click", () => {
+                const inputValue = inputElement.value;
+                items.push({
+                    id: items.length,
+                    content: inputValue,
+                    isCompleted: false,
+                });
+
+                // 초기화
+                inputElement.value = "";
+
+                // UI 업데이트
+                renderItems();
+            });
+
+            // 전체 버튼 클릭했을 때 
+            filterAllButton.addEventListener("click", () => {
+                filter = "all";
+
+                // UI 업데이트
+                renderItems();
+            });
+
+            // 진행 중 버튼 클릭했을 때 
+            filterActiveButton.addEventListener("click", () => {
+                filter = "active";
+
+                // UI 업데이트
+                renderItems();
+            });
+
+            // 완료됨 버튼 클릭했을 때 
+            filterCompletedButton.addEventListener("click", () => {
+                filter = "completed";
+
+                // UI 업데이트
+                renderItems();
+            });
+
+
+            function renderItems() {
+                // 필터링
+                let filteredItems;
+
+                if (filter === 'active') {
+                    filteredItems = items.filter(item => !item.isCompleted)
+                } else if (filter === 'completed') {
+                    filteredItems = items.filter(item => item.isCompleted)
+                } else {
+                    filteredItems = [...items]
+                }
+
+                todoListElement.innerHTML = "";
+
+                filteredItems.forEach((item, index) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = item.content;
+                    listItem.style.textDecoration = item.isCompleted ? 'line-through' : 'none';
+                    listItem.addEventListener("click", () => {
+                        items[index].isCompleted = !items[index].isCompleted;
+                        renderItems();
+                    })
+
+                    todoListElement.appendChild(listItem);
+                });
+            }
+        </script>
+    </div>
+</body>
+
+</html>
